@@ -1,0 +1,241 @@
+"""
+Project Akhir DTS WiT 2021
+Kelas F - Kelompok C
+"""
+
+import pygame, sys, random
+import inputText as txt
+
+pygame.mixer.pre_init()
+pygame.init()
+
+#setting awal
+screen_width = 1200 # lebar windows game
+screen_height = 750 # tinggi windows game
+screen = pygame.display.set_mode((screen_width, screen_height))
+pygame.display.set_caption("Get the Present!")
+
+
+#load image
+bcg_img = pygame.image.load("image/backgroundEdit.png")
+bcg_img = pygame.transform.scale(bcg_img,(screen_width, screen_height)) # menyesuaikan ukuran BG dengan windows game
+bcg2_img = pygame.image.load("image/bg_inti.png")
+bcg2_img = pygame.transform.scale(bcg2_img,(screen_width, screen_height)) # menyesuaikan ukuran BG dengan windows game
+catPict = pygame.image.load("image/catEdit.png")
+dogPict = pygame.image.load("image/dogEdit.png")
+catPictRect = catPict.get_rect()
+dogPictRect = dogPict.get_rect()
+catPictRect.center = (450,(screen_height//2)+75)
+dogPictRect.center = (750,(screen_height//2)+75)
+
+preludeCPict = pygame.image.load("image/preludeCPictEdit.png")
+preludeCPict = pygame.transform.scale(preludeCPict,(screen_width, screen_height))
+preludeDPict = pygame.image.load("image/preludeDPictEdit.png")
+preludeDPict = pygame.transform.scale(preludeDPict,(screen_width, screen_height))
+
+endGameCatPict = pygame.image.load("image/bg_akhirCat.png")
+endGameCatPict = pygame.transform.scale(endGameCatPict,(screen_width, screen_height))
+endGameDogPict = pygame.image.load("image/bg_akhirDog.png")
+endGameDogPict = pygame.transform.scale(endGameDogPict,(screen_width, screen_height))
+
+endGameCatPict2 = pygame.image.load("image/bg_akhirCat2.png")
+endGameCatPict2 = pygame.transform.scale(endGameCatPict2,(screen_width, screen_height))
+endGameDogPict2 = pygame.image.load("image/bg_akhirDog2.png")
+endGameDogPict2 = pygame.transform.scale(endGameDogPict2,(screen_width, screen_height))
+
+#load audio
+pygame.mixer.init()
+endGameAudio = pygame.mixer.Sound("sound/endGame.wav")
+endGameAudio.set_volume(0.075)
+
+pygame.mixer.music.load("sound/showAudio.wav")
+pygame.mixer.music.play(-1,0.0)
+pygame.mixer.music.set_volume(0.05)
+
+#keterangan transisi
+def keterangan1():
+    font = pygame.font.Font(pygame.font.match_font("Comic Sans MS"),18)
+    text = font.render("Tekan keyboard PANAH KANAN untuk melanjutkan", True, (93, 138, 78),None)
+    textRect = text.get_rect()
+    textRect.center = (screen_width//2,(screen_height//15))
+    screen.blit(text, textRect)
+
+def keterangan2():
+    font = pygame.font.Font(pygame.font.match_font("Comic Sans MS"),18)
+    text = font.render("Tekan ENTER untuk melanjutkan", True, (93, 138, 78),None)
+    textRect = text.get_rect()
+    textRect.center = (screen_width//2,(screen_height//15))
+    screen.blit(text, textRect)
+
+#menampilkan halaman judul
+def judulGame():
+    font = pygame.font.Font(pygame.font.match_font("cooperblack"),75)
+    text = font.render("Are You Ready", True, (0,0,0),None)
+    text2 = font.render("Get The Present ?", True, (0,0,0),None)
+    textRect = text.get_rect()
+    text2Rect = text2.get_rect()
+    textRect.center = (screen_width//2,(screen_height//2-5))
+    text2Rect.center = (screen_width//2,(screen_height//2+85))
+    screen.blit(text, textRect)
+    screen.blit(text2, text2Rect)
+
+#menampilkan angka random di layar
+def angka(a,b,c="+",d="=",e="?"):
+    screen.blit(bcg2_img,(0,0))
+    
+    font = pygame.font.Font(pygame.font.match_font("cooperblack"),200)
+    texta = font.render(str(a), True, (0,0,0),None)
+    textaRect = texta.get_rect()
+    textaRect.center = (200,(screen_height//2-50))
+    screen.blit(texta, textaRect)
+    
+    textb = font.render(str(b), True, (0,0,0),None)
+    textbRect = textb.get_rect()
+    textbRect.center = (600,(screen_height//2-50))
+    screen.blit(textb, textbRect)
+
+    textc = font.render(c, True, (0,0,0),None)
+    textcRect = textc.get_rect()
+    textcRect.center = (400,(screen_height//2-50))
+    screen.blit(textc, textcRect)
+
+    textd = font.render(d, True, (0,0,0),None)
+    textdRect = textd.get_rect()
+    textdRect.center = (800,(screen_height//2-50))
+    screen.blit(textd, textdRect)
+
+    texte = font.render(e, True, (0,0,0),None)
+    texteRect = texte.get_rect()
+    texteRect.center = (1000,(screen_height//2-50))
+    screen.blit(texte, texteRect)
+
+#menampilkan halaman pilih pemain
+def pilihPlayer():
+    font = pygame.font.Font(pygame.font.match_font("cooperblack"),50)
+    text = font.render("Choose Player", True, (0,0,0),None)
+    textRect = text.get_rect()
+    textRect.center = (screen_width//2,(screen_height//2)-50)
+    screen.blit(text, textRect)
+ 
+    screen.blit(catPict, catPictRect)
+    screen.blit(dogPict, dogPictRect)
+
+#memilih tampilan prelude sesuai dengan pemain yang dipilih
+def prelude(playerChoose):
+    if playerChoose == "Kucing":
+        screen.blit(preludeCPict, (0,0))
+    elif playerChoose == "Anjing":
+        screen.blit(preludeDPict, (0,0))
+
+
+def endGame(playerChoose, totalNilai):
+    if totalNilai == 0 :
+        if playerChoose == "Kucing":
+            screen.blit(endGameCatPict2, (0,0))
+        elif playerChoose == "Anjing":
+            screen.blit(endGameDogPict2, (0,0))
+    else :
+        if playerChoose == "Kucing":
+            screen.blit(endGameCatPict, (0,0))
+        elif playerChoose == "Anjing":
+            screen.blit(endGameDogPict, (0,0))
+        font = pygame.font.Font(pygame.font.match_font("cooperblack"),150)
+        textEndGame = font.render(str(totalNilai), True, (0,0,0),None)
+        textEndGameRect = textEndGame.get_rect()
+        textEndGameRect.center = (600,(screen_height-300))
+        screen.blit(textEndGame, textEndGameRect)
+    pygame.mixer.music.stop()
+    endGameAudio.play()
+  
+
+run = True    
+is_show = True
+is_playerChoose = False
+is_prelude = False
+is_game = False
+is_endGame = False
+
+
+count = 0
+totalNilai = 0
+playerChoose = ''
+
+
+
+
+while run :
+    screen.blit(bcg_img,(0,0))
+    
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            pygame.quit()
+            sys.exit()
+
+         
+
+        elif event.type == pygame.KEYDOWN:            
+            if is_show == True and event.key == pygame.K_RIGHT:
+                is_show = False
+                is_playerChoose = True
+            elif is_playerChoose == True and event.key == pygame.K_LEFT:
+                is_show = True
+                is_playerChoose = False
+         
+                
+        
+                
+        if is_playerChoose == True and event.type == pygame.MOUSEBUTTONDOWN:
+            while is_playerChoose : 
+                if catPictRect.collidepoint(event.pos):
+                    playerChoose = "Kucing"
+                    is_playerChoose = False
+                    is_prelude = True
+                elif dogPictRect.collidepoint(event.pos):
+                    playerChoose = "Anjing"
+                    is_playerChoose = False
+                    is_prelude = True
+                else : playerChoose = None
+                print(playerChoose)
+                    
+
+        if is_prelude == True and event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_RETURN:
+                is_game = True
+                is_prelude = False
+            
+            
+      
+            
+
+    if is_show :
+        judulGame()
+        keterangan1()
+    elif is_playerChoose :
+        pilihPlayer()
+    elif is_prelude :
+        prelude(playerChoose)
+        keterangan2()
+    elif is_game :
+        while count < 5 :
+                global a
+                global b
+                global c
+                a = random.randrange(1,10,1)
+                b = random.randrange(1,10,1)
+                c = a+b
+                angka(a,b)
+                txt.main(screen,c)
+                totalNilai += txt.score
+                print(totalNilai)
+                count +=1
+ 
+                if count == 5 :
+                    is_game = False
+                    is_endGame = True
+    elif is_endGame : endGame(playerChoose, totalNilai)
+    
+
+
+    pygame.display.update()
+    
+pygame.quit ()
